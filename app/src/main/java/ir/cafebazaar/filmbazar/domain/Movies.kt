@@ -5,7 +5,7 @@ import ir.cafebazaar.filmbazar.domain.local_models.RealmMovies
 data class Movies(
     val dates: Dates,
     val page: Int,
-    val results: List<MovieResult>,
+    val results: List<MovieItem>,
     val total_pages: Int,
     val total_results: Int
 )

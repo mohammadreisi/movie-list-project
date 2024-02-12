@@ -3,7 +3,7 @@ package ir.cafebazaar.filmbazar.domain.local_models
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import ir.cafebazaar.filmbazar.domain.MovieResult
+import ir.cafebazaar.filmbazar.domain.MovieItem
 
 open class RealmMovieResult : RealmObject {
     @PrimaryKey
@@ -23,8 +23,8 @@ open class RealmMovieResult : RealmObject {
     var vote_count: Int? = null
 }
 
-fun RealmMovieResult.toDomain(): MovieResult {
-    return MovieResult(
+fun RealmMovieResult.toDomain(): MovieItem {
+    return MovieItem(
         this.adult ?: false,
         this.backdrop_path ?: "",
         this.genre_ids?.toList()!!,

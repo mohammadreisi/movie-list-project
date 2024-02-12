@@ -1,7 +1,6 @@
 package ir.cafebazaar.filmbazar.domain.remote_models
 
-import ir.cafebazaar.filmbazar.domain.MovieResult
-import ir.cafebazaar.filmbazar.domain.local_models.toDomain
+import ir.cafebazaar.filmbazar.domain.MovieItem
 
 data class RemoteMovieResult(
     val adult: Boolean,
@@ -20,8 +19,8 @@ data class RemoteMovieResult(
     val vote_count: Int
 )
 
-fun RemoteMovieResult.toDomain(): MovieResult {
-    return MovieResult(
+fun RemoteMovieResult.toDomain(): MovieItem {
+    return MovieItem(
         this.adult,
         this.backdrop_path,
         this.genre_ids,

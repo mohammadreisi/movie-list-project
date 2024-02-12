@@ -1,8 +1,6 @@
 package ir.cafebazaar.filmbazar.domain.remote_models
 
-import ir.cafebazaar.filmbazar.domain.MovieResult
 import ir.cafebazaar.filmbazar.domain.Movies
-import ir.cafebazaar.filmbazar.domain.local_models.toDomain
 
 data class RemoteMovies(
     val dates: RemoteDates,

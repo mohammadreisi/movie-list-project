@@ -1,8 +1,9 @@
 package ir.cafebazaar.filmbazar.domain
 
+import io.realm.kotlin.ext.toRealmList
 import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
 
-data class MovieResult(
+data class MovieItem(
     val adult: Boolean,
     val backdrop_path: String,
     val genre_ids: List<Int>,
@@ -19,11 +20,11 @@ data class MovieResult(
     val vote_count: Int
 )
 
-fun MovieResult.toRealm(): RealmMovieResult{
+fun MovieItem.toRealm(): RealmMovieResult{
     return RealmMovieResult().also {
         it.adult = adult
         it.backdrop_path = backdrop_path
-        it.genre_ids = genre_ids
+        it.genre_ids = genre_ids.toRealmList()
         it.id = id
         it.original_language = original_language
         it.original_title = original_title
