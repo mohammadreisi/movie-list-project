@@ -56,6 +56,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+
     //Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
@@ -78,4 +80,14 @@ dependencies {
 
     //ViewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
+    //hilt dependency with navigation component
+    implementation ("androidx.hilt:hilt-navigation-fragment:1.1.0")
+
+    //Activity extension, referring with  "by viewModels"
+    implementation ("androidx.activity:activity-ktx:1.9.0-alpha02")
+
+    //Navigation component
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.6")
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="main_activity_root_view" type="id"/>
+    <item name="movie_list_fragment_root_view" type="id"/>
+    <item name="movie_list_fragment_recycler_view" type="id"/>
+    <item name="movie_list_fragment_title" type="id"/>
+    <item name="movie_list_fragment_logo" type="id"/>
+</resources>
