@@ -1,5 +1,6 @@
 package ir.cafebazaar.filmbazar.domain.local_models
 
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -10,7 +11,7 @@ open class RealmMovieResult : RealmObject {
     var id: Long? = null
     var adult: Boolean? = null
     var backdrop_path: String? = null
-    var genre_ids: RealmList<Int>? = null
+    var genre_ids: RealmList<Int> = realmListOf()
     var original_language: String? = null
     var original_title: String? = null
     var overview: String? = null
@@ -27,7 +28,7 @@ fun RealmMovieResult.toDomain(): MovieItem {
     return MovieItem(
         this.adult ?: false,
         this.backdrop_path ?: "",
-        this.genre_ids?.toList()!!,
+        this.genre_ids.toList(),
         this.id ?: 0L,
         this.original_language ?: "",
         this.original_title ?: "",

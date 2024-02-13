@@ -6,7 +6,7 @@ import ir.cafebazaar.filmbazar.domain.Dates
 
 open class RealmDates : RealmObject {
     @PrimaryKey
-    val id: Long? = null
+    var id: Long? = null
     var maximum: String? = null
     var minimum: String? = null
 }

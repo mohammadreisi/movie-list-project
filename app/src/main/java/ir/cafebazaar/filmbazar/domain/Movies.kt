@@ -1,5 +1,9 @@
 package ir.cafebazaar.filmbazar.domain
 
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.ext.toRealmList
+import io.realm.kotlin.types.RealmList
+import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
 import ir.cafebazaar.filmbazar.domain.local_models.RealmMovies
 
 data class Movies(
@@ -16,7 +20,7 @@ fun Movies.toRealm(): RealmMovies {
         it.page = page
         it.results = results.map { movieResult ->
             movieResult.toRealm()
-        }
+        }.toRealmList()
         it.total_pages = total_pages
         it.total_results = total_results
     }
