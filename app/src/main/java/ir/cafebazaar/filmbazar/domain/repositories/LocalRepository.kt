@@ -6,6 +6,7 @@ import ir.cafebazaar.filmbazar.domain.Movies
 import kotlinx.coroutines.flow.*
 
 interface LocalRepository {
-    suspend fun readMovieList(): Flow<DataState<Movies>>
-    suspend fun insertMovie(movieItem: MovieItem)
+    suspend fun readAllMovieList(): Flow<DataState<List<MovieItem>>>
+    suspend fun readMovieList(pageNumber: Int): Flow<DataState<List<MovieItem>>>
+    suspend fun insertMovies(movies: Movies)
 }

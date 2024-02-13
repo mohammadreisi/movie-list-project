@@ -43,6 +43,9 @@ android {
     buildFeatures {
         compose = true
     }
+    realm {
+        syncEnabled = true
+    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
     }

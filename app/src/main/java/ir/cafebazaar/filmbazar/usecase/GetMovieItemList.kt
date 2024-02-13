@@ -1,35 +1,31 @@
 package ir.cafebazaar.filmbazar.usecase
 
 import ir.cafebazaar.filmbazar.domain.DataState
-import ir.cafebazaar.filmbazar.domain.Movies
+import ir.cafebazaar.filmbazar.domain.MovieItem
 import ir.cafebazaar.filmbazar.domain.repositories.LocalRepository
 import ir.cafebazaar.filmbazar.domain.repositories.RemoteRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class GetMovieList @Inject constructor(
-    val localRepository: LocalRepository,
-    val remoteRepository: RemoteRepository
+class GetMovieItemList @Inject constructor(
+    private val localRepository: LocalRepository,
+    private val remoteRepository: RemoteRepository
 ) {
-    operator fun invoke(pageNumber: Int): Flow<DataState<Movies>> = flow {
+    operator fun invoke(pageNumber: Int): Flow<DataState<List<MovieItem>>> = flow {
         remoteRepository.getMovieList(pageNumber).collect { remoteResponse ->
             when (remoteResponse) {
                 is DataState.Success -> {
-                    remoteResponse.data.results.forEach { item ->
-                        localRepository.insertMovie(item)
-                    }
-                    localRepository.readMovieList()
-                }
-
-                is DataState.Loading -> {
-
+                    localRepository.insertMovies(remoteResponse.data)
+                    emit(localRepository.readMovieList(pageNumber).first())
                 }
 
                 is DataState.Error -> {
-
+                    emit(localRepository.readAllMovieList().first())
                 }
+
+                else -> {}
             }
         }
     }
