@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import ir.cafebazaar.filmbazar.Extensions.addConstraintSet
 import ir.cafebazaar.filmbazar.R
+import ir.cafebazaar.filmbazar.domain.MovieItem
 
 class MovieItemCell(context: Context): ConstraintLayout(context) {
     private var moviePoster: ImageView
@@ -51,4 +53,10 @@ class MovieItemCell(context: Context): ConstraintLayout(context) {
             marginTop = 8
         )
     }
+
+    fun setItemDetails(movieItem: MovieItem){
+        moviePoster.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.cafe_bazaar_logo, null))
+        movieTitle.text = movieItem.title
+    }
+
 }

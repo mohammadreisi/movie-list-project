@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class MovieListViewModel @Inject constructor(val getMovieItemList: GetMovieItemList) : ViewModel() {
+class MovieListViewModel @Inject constructor(private val getMovieItemList: GetMovieItemList) : ViewModel() {
 
     private val _movieItemsObserver = MutableLiveData<DataState<List<MovieItem>>>()
     val movieItemsObserver: LiveData<DataState<List<MovieItem>>> = _movieItemsObserver

@@ -8,6 +8,17 @@
     <item name="movie_list_fragment_recycler_view" type="id"/>
     <item name="movie_list_fragment_title" type="id"/>
     <item name="movie_list_fragment_logo" type="id"/>
+
+    <item name="movie_list_fragment_loading_screen_root" type="id"/>
+    <item name="movie_list_fragment_loading_screen_logo" type="id"/>
+    <item name="movie_list_fragment_loading_screen_progress_bar" type="id"/>
+
+    <item name="movie_list_fragment_error_screen_root" type="id"/>
+    <item name="movie_list_fragment_error_screen_title" type="id"/>
+    <item name="movie_list_fragment_error_screen_icon" type="id"/>
+    <item name="movie_list_fragment_error_screen_description" type="id"/>
+    <item name="movie_list_fragment_error_screen_button" type="id"/>
+
     <item name="movie_list_fragment_Bottom_view_root" type="id"/>
     <item name="movie_list_fragment_Bottom_view_text" type="id"/>
     <item name="movie_list_fragment_Bottom_view_progress_bar" type="id"/>

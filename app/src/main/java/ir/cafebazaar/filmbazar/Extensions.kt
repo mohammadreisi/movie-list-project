@@ -1,9 +1,11 @@
 package ir.cafebazaar.filmbazar
 
+import android.content.res.Resources
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import kotlin.math.ceil
 
 object Extensions {
 
@@ -170,5 +172,11 @@ object Extensions {
 
         set.applyTo(parentView)
 
+    }
+
+    fun Int.dp() : Int{
+        return if (this == 0) {
+            0
+        } else ceil((Resources.getSystem().displayMetrics.density * this).toDouble()).toInt()
     }
 }

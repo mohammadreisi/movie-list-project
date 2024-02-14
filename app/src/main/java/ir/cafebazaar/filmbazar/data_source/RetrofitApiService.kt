@@ -10,9 +10,10 @@ import retrofit2.http.Query
 /**Basic interface Class for retrofit methods*/
 interface RetrofitApiService {
 
-    @GET(".")
+    @GET("3/movie/upcoming/")
     suspend fun getMovies(
         @Header("Authorization") apiKey: String,
+        @Query("language") language: String,
         @Query("page") pageNumber: Int
-    ): Flow<RemoteMovies>
+    ): Response<RemoteMovies>
 }

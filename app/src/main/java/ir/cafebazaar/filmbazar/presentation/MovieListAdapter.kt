@@ -1,5 +1,6 @@
 package ir.cafebazaar.filmbazar.presentation
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,9 +23,17 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.MovieListViewHold
 
     override fun onBindViewHolder(holder: MovieListViewHolder, position: Int) {
         val movieItemCell = holder.itemView as MovieItemCell
+        val currentItem = movieItemList[position]
+        movieItemCell.setItemDetails(currentItem)
     }
 
-    fun addMovieItemsWithRange(movieItems: List<MovieItem>){
+    @SuppressLint("NotifyDataSetChanged")
+    fun addMovieItems(movieItems: List<MovieItem>) {
+        movieItemList.addAll(movieItems)
+        notifyDataSetChanged()
+    }
 
+    fun getCurrentAdapterSize(): Int {
+        return movieItemList.size
     }
 }

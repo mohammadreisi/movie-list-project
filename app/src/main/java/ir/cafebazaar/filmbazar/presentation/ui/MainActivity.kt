@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         }
         setContentView(rootView)
 
-        supportFragmentManager.beginTransaction()
+        this.supportFragmentManager.beginTransaction()
             .replace(rootView.id, MovieListFragment() as Fragment).commit()
 
     }
