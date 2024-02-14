@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    //Main activity
     <item name="main_activity_root_view" type="id"/>
+
+    //Movie list fragment
     <item name="movie_list_fragment_root_view" type="id"/>
     <item name="movie_list_fragment_recycler_view" type="id"/>
     <item name="movie_list_fragment_title" type="id"/>
     <item name="movie_list_fragment_logo" type="id"/>
+    <item name="movie_list_fragment_Bottom_view_root" type="id"/>
+    <item name="movie_list_fragment_Bottom_view_text" type="id"/>
+    <item name="movie_list_fragment_Bottom_view_progress_bar" type="id"/>
+    <item name="movie_list_fragment_Bottom_view_button" type="id"/>
+
+    //Movie item cell
+    <item name="movie_item_cell_poster" type="id"/>
+    <item name="movie_item_cell_title" type="id"/>
 </resources>

@@ -1,16 +1,15 @@
 package ir.cafebazaar.filmbazar.presentation.ui
 
-import android.app.Fragment
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import ir.cafebazaar.filmbazar.R
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val rootView = FrameLayout(this).apply {
@@ -22,8 +21,8 @@ class MainActivity : ComponentActivity() {
         }
         setContentView(rootView)
 
-        val fragmentManager = this.fragmentManager
-//        val fragmentManager = FragmentActivity().supportFragmentManager
-        fragmentManager.beginTransaction().replace(rootView.id, MovieListFragment() as Fragment).commit()
+        supportFragmentManager.beginTransaction()
+            .replace(rootView.id, MovieListFragment() as Fragment).commit()
+
     }
 }
