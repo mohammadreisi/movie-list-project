@@ -1,10 +1,8 @@
 package ir.cafebazaar.filmbazar.domain
 
-import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.ext.toRealmList
-import io.realm.kotlin.types.RealmList
-import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
 import ir.cafebazaar.filmbazar.domain.local_models.RealmMovies
+import java.util.Random
 
 data class Movies(
     val dates: Dates,
@@ -16,6 +14,7 @@ data class Movies(
 
 fun Movies.toRealm(): RealmMovies {
     return RealmMovies().also {
+        it.id = Random().nextLong()
         it.dates = dates.toRealmDates()
         it.page = page
         it.results = results.map { movieResult ->

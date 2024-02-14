@@ -9,6 +9,7 @@ import ir.cafebazaar.filmbazar.domain.MovieItem
 open class RealmMovieResult : RealmObject {
     @PrimaryKey
     var id: Long? = null
+    var movieId: Long? = null
     var adult: Boolean? = null
     var backdrop_path: String? = null
     var genre_ids: RealmList<Int> = realmListOf()

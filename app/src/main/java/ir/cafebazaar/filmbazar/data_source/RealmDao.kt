@@ -21,7 +21,8 @@ class RealmDao @Inject constructor(val realm: Realm) {
     }
 
     suspend fun readMovies(pageNumber: Int): RealmMovies? {
-        return realm.query<RealmMovies>("page == $pageNumber").first().find()
+        val realmResult = realm.query(RealmMovies::class,"page == $0", pageNumber).find()
+        return realmResult.first()
     }
 
     suspend fun readAllMovieList(): RealmResults<RealmMovieResult> {

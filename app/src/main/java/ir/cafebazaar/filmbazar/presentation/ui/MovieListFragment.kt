@@ -74,7 +74,7 @@ class MovieListFragment : Fragment() {
         initViews()
         setViews()
         setListeners()
-        viewModel.getMovieItems(currentPageNumber++)
+        viewModel.getMovieItems(currentPageNumber + 1)
         return rootView
     }
 
@@ -456,11 +456,11 @@ class MovieListFragment : Fragment() {
         }
 
         errorScreenButton.setOnClickListener {
-            viewModel.getMovieItems(currentPageNumber++)
+            viewModel.getMovieItems(currentPageNumber + 1)
         }
 
         bottomStripScreenTryAgainButton.setOnClickListener {
-            viewModel.getMovieItems(currentPageNumber++)
+            viewModel.getMovieItems(currentPageNumber + 1)
         }
     }
 }

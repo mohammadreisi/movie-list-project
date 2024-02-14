@@ -2,6 +2,7 @@ package ir.cafebazaar.filmbazar.domain
 
 import io.realm.kotlin.ext.toRealmList
 import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
+import java.util.Random
 
 data class MovieItem(
     val adult: Boolean,
@@ -22,10 +23,11 @@ data class MovieItem(
 
 fun MovieItem.toRealm(): RealmMovieResult{
     return RealmMovieResult().also {
+        it.id = Random().nextLong()
+        it.movieId = id
         it.adult = adult
         it.backdrop_path = backdrop_path
         it.genre_ids = genre_ids.toRealmList()
-        it.id = id
         it.original_language = original_language
         it.original_title = original_title
         it.overview = overview
