@@ -1,10 +1,8 @@
 package ir.cafebazaar.filmbazar.presentation.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Vibrator
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -13,6 +11,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.GONE
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.VISIBLE
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -22,21 +21,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import ir.cafebazaar.filmbazar.Constants
 import ir.cafebazaar.filmbazar.Extensions.addConstraintSet
 import ir.cafebazaar.filmbazar.Extensions.dp
 import ir.cafebazaar.filmbazar.R
 import ir.cafebazaar.filmbazar.domain.DataState
 import ir.cafebazaar.filmbazar.presentation.MovieListAdapter
 import ir.cafebazaar.filmbazar.presentation.viewmodel.MovieListViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieListFragment : Fragment() {
@@ -71,7 +64,11 @@ class MovieListFragment : Fragment() {
     private lateinit var recyclerViewAdapter: MovieListAdapter
 
     private var currentPageNumber: Int = 0
-    private var recyclerViewFirstTouchedY = 0f
+
+    private var recyclerViewFirstY = 0f
+    private var firstTouchedY = 0f
+
+    private var dataIsFetching = false
     private var isEndOfRecyclerView: Boolean = false
 
     private val viewModel: MovieListViewModel by viewModels()
@@ -89,7 +86,8 @@ class MovieListFragment : Fragment() {
         initViews()
         setViews()
         setListeners()
-        viewModel.getMovieItems(currentPageNumber + 1)
+        currentPageNumber += 1
+        viewModel.getMovieItems(currentPageNumber)
         return rootView
     }
 
@@ -222,7 +220,7 @@ class MovieListFragment : Fragment() {
         bottomStripScreenText = TextView(requireContext()).apply {
             id = R.id.movie_list_fragment_Bottom_view_text
             text = context.getString(R.string.something_went_wrong)
-            setTextColor(Color.WHITE)
+            setTextColor(Color.BLACK)
             gravity = Gravity.CENTER
             textSize = 12f
         }
@@ -376,8 +374,8 @@ class MovieListFragment : Fragment() {
         addConstraintSet(
             parentView = bottomStripScreenRoot,
             childViewId = bottomStripScreenProgressBar.id,
-            width = 24.dp(),
-            height = 24.dp(),
+            width = 30.dp(),
+            height = 30.dp(),
             startToStart = bottomStripScreenRoot.id,
             endToEnd = bottomStripScreenRoot.id,
             topToTop = bottomStripScreenRoot.id,
@@ -440,7 +438,7 @@ class MovieListFragment : Fragment() {
             parentView = rootView,
             childViewId = bottomStripScreenRoot.id,
             width = 0.dp(),
-            height = 40.dp(),
+            height = 50.dp(),
             startToStart = rootView.id,
             endToEnd = rootView.id,
             topToBottom = recyclerView.id,
@@ -454,6 +452,11 @@ class MovieListFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setListeners() {
         viewModel.movieItemsObserver.observe(viewLifecycleOwner) { response ->
+            dataIsFetching = false
+            recyclerView.animate()
+                .y(recyclerViewFirstY)
+                .setDuration(0)
+                .start()
             when (response) {
                 is DataState.Success -> {
                     recyclerView.visibility = VISIBLE
@@ -477,7 +480,6 @@ class MovieListFragment : Fragment() {
                         bottomStripScreenTryAgainButton.visibility = GONE
 
                         loadingScreenRoot.visibility = GONE
-                        recyclerView.visibility = GONE
                         errorScreenRoot.visibility = GONE
                     }
                 }
@@ -496,7 +498,6 @@ class MovieListFragment : Fragment() {
                         bottomStripScreenProgressBar.visibility = GONE
 
                         loadingScreenRoot.visibility = GONE
-                        recyclerView.visibility = GONE
                         errorScreenRoot.visibility = GONE
                     }
                 }
@@ -504,16 +505,24 @@ class MovieListFragment : Fragment() {
         }
 
         recyclerView.setOnTouchListener { _, event ->
-            if (isEndOfRecyclerView) {
+            if (
+                isEndOfRecyclerView &&
+                !dataIsFetching &&
+                currentPageNumber <= Constants.TOTAL_PAGE_AVAILABLE_NUMBER &&
+                bottomStripScreenRoot.visibility != VISIBLE
+            ) {
                 //Start Touching
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    recyclerViewFirstTouchedY = event.y
+                    firstTouchedY = event.y
 
                     //Moving
                 } else if (event.action == MotionEvent.ACTION_MOVE) {
-                    val moveY = (recyclerViewFirstTouchedY - event.y)
+                    val moveY = (firstTouchedY - event.y)
 
-                    if ((moveY / 10) > 20) {
+                    if ((moveY / 5) > 150) {
+                        currentPageNumber += 1
+                        viewModel.getMovieItems(currentPageNumber)
+                        dataIsFetching = true
                         bottomStripScreenRoot.visibility = VISIBLE
                         bottomStripScreenProgressBar.visibility = VISIBLE
                         bottomStripScreenText.visibility = GONE
@@ -521,10 +530,14 @@ class MovieListFragment : Fragment() {
 
                     } else if (moveY > 0) {
                         recyclerView.animate()
-                            .y(recyclerViewFirstTouchedY + (moveY / 10))
+                            .y(recyclerViewFirstY - (moveY / 5))
                             .setDuration(0)
                             .start()
+                    } else {
+                        return@setOnTouchListener false
                     }
+                } else {
+                    return@setOnTouchListener false
                 }
                 return@setOnTouchListener true
             } else {
@@ -537,18 +550,29 @@ class MovieListFragment : Fragment() {
                 val gridLayoutManager = (recyclerView.layoutManager as GridLayoutManager?)!!
                 val totalItemCount = gridLayoutManager.itemCount
                 val lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition()
-                if (totalItemCount - lastVisibleItemPosition == 1) {
-                    isEndOfRecyclerView = true
+                isEndOfRecyclerView = (totalItemCount - lastVisibleItemPosition) == 1
+            }
+        })
+
+        rootView.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (recyclerViewFirstY == 0f) {
+                    recyclerViewFirstY = recyclerView.y
+                } else {
+                    rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             }
         })
 
         errorScreenButton.setOnClickListener {
-            viewModel.getMovieItems(currentPageNumber + 1)
+            viewModel.getMovieItems(currentPageNumber)
+            dataIsFetching = true
         }
 
         bottomStripScreenTryAgainButton.setOnClickListener {
-            viewModel.getMovieItems(currentPageNumber + 1)
+            viewModel.getMovieItems(currentPageNumber)
+            dataIsFetching = true
         }
     }
 }

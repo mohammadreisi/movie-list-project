@@ -5,25 +5,25 @@ import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
 import java.util.Random
 
 data class MovieItem(
-    val adult: Boolean,
-    val backdrop_path: String,
-    val genre_ids: List<Int>,
-    val id: Long,
-    val original_language: String,
-    val original_title: String,
-    val overview: String,
-    val popularity: Double,
-    val poster_path: String,
-    val release_date: String,
-    val title: String,
-    val video: Boolean,
-    val vote_average: Float,
-    val vote_count: Int
+    val adult: Boolean? = null,
+    val backdrop_path: String? = null,
+    val genre_ids: List<Int>? = null,
+    val id: Long? = null,
+    val original_language: String? = null,
+    val original_title: String? = null,
+    val overview: String? = null,
+    val popularity: Double? = null,
+    val poster_path: String? = null,
+    val release_date: String? = null,
+    val title: String? = null,
+    val video: Boolean? = null,
+    val vote_average: Float? = null,
+    val vote_count: Int? = null
 )
 
 fun MovieItem.toRealm(): RealmMovieResult {
     val genreIdRealmList = RealmList<Int>()
-    genre_ids.forEach {
+    genre_ids?.forEach {
         genreIdRealmList.add(it)
     }
     return RealmMovieResult().also {

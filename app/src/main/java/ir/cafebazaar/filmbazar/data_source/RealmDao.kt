@@ -14,7 +14,7 @@ import javax.inject.Inject
  *          with dagger hilt*/
 class RealmDao @Inject constructor(val realm: Realm) {
 
-    suspend fun insertMovies(inputRealmMovies: RealmMovies) {
+    fun insertMovies(inputRealmMovies: RealmMovies) {
         var realmMovies: RealmMovies?
         realm.beginTransaction()
         realmMovies =
@@ -40,17 +40,11 @@ class RealmDao @Inject constructor(val realm: Realm) {
     }
 
     private fun insertDates(inputRealmDates: RealmDates?): RealmDates? {
-//            realm.where(RealmDates::class.java)?.equalTo("page", inputRealmMovies.page)
-//                ?.findFirst()
-
-//        if (realmMovies == null) {
-//    }
         val realmDates: RealmDates? = realm.createObject(RealmDates::class.java, inputRealmDates?.id)
         realmDates?.let {
             it.maximum = inputRealmDates?.maximum
             it.minimum = inputRealmDates?.minimum
         }
-//        realm.commitTransaction()
         return realmDates
     }
 
@@ -73,14 +67,17 @@ class RealmDao @Inject constructor(val realm: Realm) {
             it.vote_average = inputRealmMovieResult.vote_average
             it.vote_count = inputRealmMovieResult.vote_count
         }
-//        realm.commitTransaction()
         return realmMovieResult
     }
 
-    suspend fun readMovies(pageNumber: Int): RealmMovies? {
+    fun readMovies(pageNumber: Int): RealmMovies? {
         val readObject = realm.where(RealmMovies::class.java)
             .equalTo("page", pageNumber)
             .findFirst()
-        return realm.copyFromRealm(readObject)
+        return if(readObject != null){
+            realm.copyFromRealm(readObject)
+        } else {
+            null
+        }
     }
 }

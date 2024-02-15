@@ -5,6 +5,7 @@ import ir.cafebazaar.filmbazar.domain.MovieItem
 import ir.cafebazaar.filmbazar.domain.repositories.LocalRepository
 import ir.cafebazaar.filmbazar.domain.repositories.RemoteRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -22,9 +23,8 @@ class GetMovieItemList @Inject constructor(
                 }
 
                 is DataState.Error -> {
-//                    emit(localRepository.readAllMovieList().first())
+                    emit(localRepository.readMovieList(pageNumber).first())
                 }
-
                 else -> {}
             }
         }

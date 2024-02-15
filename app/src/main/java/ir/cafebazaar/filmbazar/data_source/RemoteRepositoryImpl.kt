@@ -15,21 +15,23 @@ class RemoteRepositoryImpl @Inject constructor(val retrofitApiService: RetrofitA
     RemoteRepository {
     override suspend fun getMovieList(pageNumber: Int): Flow<DataState<Movies>> = flow {
         withContext(Dispatchers.IO) {
-            val remoteResponse =
-                retrofitApiService.getMovies(Constants.API_KEY, Constants.LANGUAGE, pageNumber)
-            withContext(Dispatchers.Main.immediate) {
-                if (remoteResponse.isSuccessful) {
-                    if (remoteResponse.body() != null) {
-                        emit(DataState.Success(remoteResponse.body()?.toDomain()!!))
+            try {
+                val remoteResponse =
+                    retrofitApiService.getMovies(Constants.API_KEY, Constants.LANGUAGE, pageNumber)
+                withContext(Dispatchers.Main.immediate) {
+                    if (remoteResponse.isSuccessful) {
+                        if (remoteResponse.body() != null) {
+                            emit(DataState.Success(remoteResponse.body()?.toDomain()!!))
+                        }
+                    } else {
+                        emit(DataState.Error("Network error"))
                     }
-                } else {
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main.immediate) {
                     emit(DataState.Error("Network error"))
                 }
             }
         }
-    }
-
-    override suspend fun getMoviePoster(pageNumber: Int): Flow<DataState<String>> {
-        TODO("Not yet implemented")
     }
 }
