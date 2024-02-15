@@ -1,11 +1,11 @@
 package ir.cafebazaar.filmbazar.domain.local_models
 
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.realm.RealmList
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 import ir.cafebazaar.filmbazar.domain.Movies
 
-open class RealmMovies : RealmObject {
+open class RealmMovies : RealmObject() {
     @PrimaryKey
     var id: Long? = null
     var dates: RealmDates? = null

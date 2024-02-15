@@ -1,18 +1,17 @@
 package ir.cafebazaar.filmbazar.domain.local_models
 
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.realm.RealmList
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 import ir.cafebazaar.filmbazar.domain.MovieItem
 
-open class RealmMovieResult : RealmObject {
+open class RealmMovieResult : RealmObject() {
     @PrimaryKey
     var id: Long? = null
     var movieId: Long? = null
     var adult: Boolean? = null
     var backdrop_path: String? = null
-    var genre_ids: RealmList<Int> = realmListOf()
+    var genre_ids: RealmList<Int> = RealmList()
     var original_language: String? = null
     var original_title: String? = null
     var overview: String? = null

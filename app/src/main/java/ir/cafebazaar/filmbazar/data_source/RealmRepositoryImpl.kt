@@ -12,18 +12,6 @@ import javax.inject.Inject
 
 class RealmRepositoryImpl @Inject constructor(private val realmDao: RealmDao) : LocalRepository {
 
-    override suspend fun readAllMovieList(): Flow<DataState<List<MovieItem>>> = flow {
-        val realmResults = realmDao.readAllMovieList()
-        val movieItems = realmResults.map {
-            it.toDomain()
-        }
-        if (movieItems.isNotEmpty()) {
-            emit(DataState.Success(movieItems))
-        } else {
-            emit(DataState.Error("Not found"))
-        }
-    }
-
     override suspend fun readMovieList(pageNumber: Int): Flow<DataState<List<MovieItem>>> = flow {
         val realmResults = realmDao.readMovies(pageNumber)
         val movieItems = realmResults?.results?.map {
@@ -37,6 +25,6 @@ class RealmRepositoryImpl @Inject constructor(private val realmDao: RealmDao) : 
     }
 
     override suspend fun insertMovies(movies: Movies) {
-        realmDao.insertMove(movies.toRealm())
+        realmDao.insertMovies(movies.toRealm())
     }
 }

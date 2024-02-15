@@ -1,10 +1,10 @@
 package ir.cafebazaar.filmbazar.domain.local_models
 
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 import ir.cafebazaar.filmbazar.domain.Dates
 
-open class RealmDates : RealmObject {
+open class RealmDates : RealmObject() {
     @PrimaryKey
     var id: Long? = null
     var maximum: String? = null

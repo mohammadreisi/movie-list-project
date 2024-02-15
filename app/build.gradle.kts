@@ -1,11 +1,12 @@
 plugins {
-    kotlin("kapt")
+//    kotlin("kapt")
+    id("kotlin-kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
-    id("io.realm.kotlin")
-
+    id("realm-android")
 }
+//apply plugin: "realm-android"
 
 android {
     namespace = "ir.cafebazaar.filmbazar"
@@ -17,6 +18,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -34,17 +36,20 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+//    realm {
+//        syncEnabled = true
+//    }
 }
 
 
@@ -60,12 +65,7 @@ dependencies {
 
     //Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-
-    //Realm
-    implementation("io.realm.kotlin:library-base:1.11.0")
-    implementation("io.realm.kotlin:library-sync:1.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     //Glide
     implementation("com.github.bumptech.glide:glide:4.13.0")

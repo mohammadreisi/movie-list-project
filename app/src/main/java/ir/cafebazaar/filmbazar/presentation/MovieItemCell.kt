@@ -2,25 +2,33 @@ package ir.cafebazaar.filmbazar.presentation
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
+import android.view.Gravity
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.marginTop
 import ir.cafebazaar.filmbazar.Extensions.addConstraintSet
+import ir.cafebazaar.filmbazar.Extensions.dp
 import ir.cafebazaar.filmbazar.R
 import ir.cafebazaar.filmbazar.domain.MovieItem
 
-class MovieItemCell(context: Context): ConstraintLayout(context) {
+class MovieItemCell(context: Context) : ConstraintLayout(context) {
     private var moviePoster: ImageView
     private var movieTitle: TextView
 
     init {
         moviePoster = ImageView(context).apply {
             id = R.id.movie_item_cell_poster
+            background =
+                ResourcesCompat.getDrawable(resources, R.drawable.movie_poster_background, null)
         }
         movieTitle = TextView(context).apply {
             id = R.id.movie_item_cell_title
             textSize = 12f
+            gravity = Gravity.CENTER
+            typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.BLACK)
         }
 
@@ -29,7 +37,7 @@ class MovieItemCell(context: Context): ConstraintLayout(context) {
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT
             )
-            setPadding(4,4,4,4)
+            setPadding(4.dp(), 4.dp(), 4.dp(), 4.dp())
             addView(moviePoster)
             addView(movieTitle)
         }
@@ -39,23 +47,30 @@ class MovieItemCell(context: Context): ConstraintLayout(context) {
             topToTop = this.id,
             startToStart = this.id,
             endToEnd = this.id,
-            width = 60,
-            height = 100
+            width = 120.dp(),
+            height = 180.dp(),
+            marginTop = 16.dp()
         )
         addConstraintSet(
             parentView = this,
             childViewId = movieTitle.id,
             topToBottom = moviePoster.id,
-            startToStart = this.id,
-            endToEnd = this.id,
+            startToStart = moviePoster.id,
+            endToEnd = moviePoster.id,
             width = LayoutParams.WRAP_CONTENT,
             height = LayoutParams.WRAP_CONTENT,
-            marginTop = 8
+            marginTop = 8.dp()
         )
     }
 
-    fun setItemDetails(movieItem: MovieItem){
-        moviePoster.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.cafe_bazaar_logo, null))
+    fun setItemDetails(movieItem: MovieItem) {
+        moviePoster.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.cafe_bazaar_logo,
+                null
+            )
+        )
         movieTitle.text = movieItem.title
     }
 

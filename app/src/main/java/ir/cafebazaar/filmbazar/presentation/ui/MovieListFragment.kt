@@ -17,7 +17,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ir.cafebazaar.filmbazar.Extensions.addConstraintSet
@@ -26,7 +28,8 @@ import ir.cafebazaar.filmbazar.R
 import ir.cafebazaar.filmbazar.domain.DataState
 import ir.cafebazaar.filmbazar.presentation.MovieListAdapter
 import ir.cafebazaar.filmbazar.presentation.viewmodel.MovieListViewModel
-import org.w3c.dom.Text
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieListFragment : Fragment() {
@@ -91,7 +94,9 @@ class MovieListFragment : Fragment() {
 
         recyclerView = RecyclerView(requireContext()).apply {
             id = R.id.movie_list_fragment_recycler_view
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager =
+                GridLayoutManager(requireContext(),3, GridLayoutManager.VERTICAL, false)
+            setHasFixedSize(true)
             adapter = recyclerViewAdapter
         }
 
@@ -162,7 +167,8 @@ class MovieListFragment : Fragment() {
                 )
             )
             setPadding(16.dp(), 16.dp(), 16.dp(), 16.dp())
-            background = ResourcesCompat.getDrawable(resources, R.drawable.error_icon_background, null)
+            background =
+                ResourcesCompat.getDrawable(resources, R.drawable.error_icon_background, null)
         }
 
         errorScreenTitle = TextView(requireContext()).apply {
@@ -187,7 +193,8 @@ class MovieListFragment : Fragment() {
             textSize = 18f
             setPadding(8.dp(), 8.dp(), 8.dp(), 8.dp())
             setTextColor(Color.WHITE)
-            background = ResourcesCompat.getDrawable(resources, R.drawable.error_button_background, null)
+            background =
+                ResourcesCompat.getDrawable(resources, R.drawable.error_button_background, null)
         }
 
         //Bottom strip screen
@@ -366,7 +373,7 @@ class MovieListFragment : Fragment() {
             endToEnd = rootView.id,
             topToBottom = title.id,
             bottomToTop = bottomStripScreenRoot.id,
-            marginTop = 8.dp(),
+            marginTop = 24.dp(),
             marginEnd = 8.dp(),
             marginStart = 8.dp()
         )
@@ -409,11 +416,14 @@ class MovieListFragment : Fragment() {
         viewModel.movieItemsObserver.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is DataState.Success -> {
-                    recyclerViewAdapter.addMovieItems(response.data)
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        recyclerView.visibility = VISIBLE
+                        recyclerViewAdapter.addMovieItems(response.data)
 
-                    loadingScreenRoot.visibility = GONE
-                    errorScreenRoot.visibility = GONE
-                    bottomStripScreenRoot.visibility = GONE
+                        loadingScreenRoot.visibility = GONE
+                        errorScreenRoot.visibility = GONE
+                        bottomStripScreenRoot.visibility = GONE
+                    }
                 }
 
                 is DataState.Loading -> {

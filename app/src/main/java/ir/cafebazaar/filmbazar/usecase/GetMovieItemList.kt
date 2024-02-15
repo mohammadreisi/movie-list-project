@@ -22,7 +22,7 @@ class GetMovieItemList @Inject constructor(
                 }
 
                 is DataState.Error -> {
-                    emit(localRepository.readAllMovieList().first())
+//                    emit(localRepository.readAllMovieList().first())
                 }
 
                 else -> {}

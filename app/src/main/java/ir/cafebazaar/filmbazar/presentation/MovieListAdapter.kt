@@ -29,8 +29,12 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.MovieListViewHold
 
     @SuppressLint("NotifyDataSetChanged")
     fun addMovieItems(movieItems: List<MovieItem>) {
+        val firstIndex = movieItemList.size
         movieItemList.addAll(movieItems)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(
+            firstIndex,
+            movieItemList.size - firstIndex
+        )
     }
 
     fun getCurrentAdapterSize(): Int {

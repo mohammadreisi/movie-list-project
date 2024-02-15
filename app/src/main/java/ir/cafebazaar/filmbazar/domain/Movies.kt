@@ -1,6 +1,7 @@
 package ir.cafebazaar.filmbazar.domain
 
-import io.realm.kotlin.ext.toRealmList
+import io.realm.RealmList
+import ir.cafebazaar.filmbazar.domain.local_models.RealmMovieResult
 import ir.cafebazaar.filmbazar.domain.local_models.RealmMovies
 import java.util.Random
 
@@ -13,13 +14,16 @@ data class Movies(
 )
 
 fun Movies.toRealm(): RealmMovies {
+    val movieResultsRealmList = RealmList<RealmMovieResult>()
+    results.forEach {
+        movieResultsRealmList.add(it.toRealm())
+    }
+
     return RealmMovies().also {
         it.id = Random().nextLong()
         it.dates = dates.toRealmDates()
         it.page = page
-        it.results = results.map { movieResult ->
-            movieResult.toRealm()
-        }.toRealmList()
+        it.results = movieResultsRealmList
         it.total_pages = total_pages
         it.total_results = total_results
     }
