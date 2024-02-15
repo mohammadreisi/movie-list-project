@@ -3,6 +3,7 @@ package ir.cafebazaar.filmbazar.presentation
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ir.cafebazaar.filmbazar.domain.MovieItem
@@ -25,6 +26,10 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.MovieListViewHold
         val movieItemCell = holder.itemView as MovieItemCell
         val currentItem = movieItemList[position]
         movieItemCell.setItemDetails(currentItem)
+
+        movieItemCell.setOnClickListener {
+            Toast.makeText(holder.itemView.context, currentItem.title, Toast.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
