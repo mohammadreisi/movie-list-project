@@ -23,7 +23,7 @@ class MovieListViewModel @Inject constructor(private val getMovieItemList: GetMo
     fun getMovieItems(pageNumber: Int) {
         _movieItemsObserver.value = DataState.Loading()
         getMovieItemList(pageNumber).onEach {
-            _movieItemsObserver.value = it
+            _movieItemsObserver.postValue(it)
         }.launchIn(viewModelScope)
     }
 }

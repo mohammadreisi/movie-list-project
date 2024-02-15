@@ -1,9 +1,13 @@
 package ir.cafebazaar.filmbazar.presentation.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Vibrator
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.GONE
@@ -17,7 +21,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +31,11 @@ import ir.cafebazaar.filmbazar.R
 import ir.cafebazaar.filmbazar.domain.DataState
 import ir.cafebazaar.filmbazar.presentation.MovieListAdapter
 import ir.cafebazaar.filmbazar.presentation.viewmodel.MovieListViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -37,8 +44,11 @@ class MovieListFragment : Fragment() {
     //Root view
     private lateinit var rootView: ConstraintLayout
     private lateinit var recyclerView: RecyclerView
-    private lateinit var logo: ImageView
-    private lateinit var title: TextView
+
+    //Top bar view
+    private lateinit var topBarViewRoot: ConstraintLayout
+    private lateinit var topBarViewLogo: ImageView
+    private lateinit var topBarViewTitle: TextView
 
     //Loading screen
     private lateinit var loadingScreenRoot: ConstraintLayout
@@ -61,6 +71,8 @@ class MovieListFragment : Fragment() {
     private lateinit var recyclerViewAdapter: MovieListAdapter
 
     private var currentPageNumber: Int = 0
+    private var recyclerViewFirstTouchedY = 0f
+    private var isEndOfRecyclerView: Boolean = false
 
     private val viewModel: MovieListViewModel by viewModels()
 
@@ -95,13 +107,22 @@ class MovieListFragment : Fragment() {
         recyclerView = RecyclerView(requireContext()).apply {
             id = R.id.movie_list_fragment_recycler_view
             layoutManager =
-                GridLayoutManager(requireContext(),3, GridLayoutManager.VERTICAL, false)
+                GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
             setHasFixedSize(true)
             adapter = recyclerViewAdapter
         }
 
-        logo = ImageView(requireContext()).apply {
-            id = R.id.movie_list_fragment_logo
+        topBarViewRoot = ConstraintLayout(requireContext()).apply {
+            id = R.id.movie_list_fragment_top_bar_view_root
+            layoutParams = LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+            )
+            elevation = 10f
+        }
+
+        topBarViewLogo = ImageView(requireContext()).apply {
+            id = R.id.movie_list_fragment_top_bar_view_logo
             scaleType = ImageView.ScaleType.CENTER_CROP
             setImageDrawable(
                 ResourcesCompat.getDrawable(
@@ -112,8 +133,8 @@ class MovieListFragment : Fragment() {
             )
         }
 
-        title = TextView(requireContext()).apply {
-            id = R.id.movie_list_fragment_title
+        topBarViewTitle = TextView(requireContext()).apply {
+            id = R.id.movie_list_fragment_top_bar_view_title
             text = context.getString(R.string.discover)
             setTextColor(Color.RED)
             gravity = Gravity.CENTER
@@ -226,6 +247,34 @@ class MovieListFragment : Fragment() {
 
     private fun setViews() {
 
+        topBarViewRoot.apply {
+            addView(topBarViewTitle)
+            addView(topBarViewLogo)
+        }
+
+        addConstraintSet(
+            parentView = topBarViewRoot,
+            childViewId = topBarViewTitle.id,
+            width = LayoutParams.WRAP_CONTENT,
+            height = LayoutParams.WRAP_CONTENT,
+            startToStart = topBarViewRoot.id,
+            endToEnd = topBarViewRoot.id,
+            topToTop = topBarViewRoot.id,
+            bottomToBottom = topBarViewRoot.id,
+            marginTop = 8.dp()
+        )
+        addConstraintSet(
+            parentView = topBarViewRoot,
+            childViewId = topBarViewLogo.id,
+            width = 36.dp(),
+            height = 36.dp(),
+            endToEnd = topBarViewRoot.id,
+            topToTop = topBarViewTitle.id,
+            bottomToBottom = topBarViewTitle.id,
+            marginTop = 8.dp(),
+            marginEnd = 8.dp()
+        )
+
         loadingScreenRoot.apply {
             addView(loadingScreenLogo)
             addView(loadingScreenProgressBar)
@@ -336,8 +385,7 @@ class MovieListFragment : Fragment() {
         )
 
         rootView.apply {
-            addView(title)
-            addView(logo)
+            addView(topBarViewRoot)
             addView(recyclerView)
             addView(loadingScreenRoot)
             addView(errorScreenRoot)
@@ -346,24 +394,15 @@ class MovieListFragment : Fragment() {
 
         addConstraintSet(
             parentView = rootView,
-            childViewId = title.id,
-            width = LayoutParams.WRAP_CONTENT,
+            childViewId = topBarViewRoot.id,
+            width = LayoutParams.MATCH_PARENT,
             height = LayoutParams.WRAP_CONTENT,
             startToStart = rootView.id,
             endToEnd = rootView.id,
             topToTop = rootView.id,
             marginTop = 8.dp()
         )
-        addConstraintSet(
-            parentView = rootView,
-            childViewId = logo.id,
-            width = 36.dp(),
-            height = 36.dp(),
-            endToEnd = rootView.id,
-            topToTop = rootView.id,
-            marginTop = 8.dp(),
-            marginEnd = 8.dp()
-        )
+
         addConstraintSet(
             parentView = rootView,
             childViewId = recyclerView.id,
@@ -371,7 +410,7 @@ class MovieListFragment : Fragment() {
             height = 0.dp(),
             startToStart = rootView.id,
             endToEnd = rootView.id,
-            topToBottom = title.id,
+            topToBottom = topBarViewRoot.id,
             bottomToTop = bottomStripScreenRoot.id,
             marginTop = 24.dp(),
             marginEnd = 8.dp(),
@@ -412,18 +451,17 @@ class MovieListFragment : Fragment() {
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setListeners() {
         viewModel.movieItemsObserver.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is DataState.Success -> {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        recyclerView.visibility = VISIBLE
-                        recyclerViewAdapter.addMovieItems(response.data)
+                    recyclerView.visibility = VISIBLE
+                    recyclerViewAdapter.addMovieItems(response.data)
 
-                        loadingScreenRoot.visibility = GONE
-                        errorScreenRoot.visibility = GONE
-                        bottomStripScreenRoot.visibility = GONE
-                    }
+                    loadingScreenRoot.visibility = GONE
+                    errorScreenRoot.visibility = GONE
+                    bottomStripScreenRoot.visibility = GONE
                 }
 
                 is DataState.Loading -> {
@@ -464,6 +502,46 @@ class MovieListFragment : Fragment() {
                 }
             }
         }
+
+        recyclerView.setOnTouchListener { _, event ->
+            if (isEndOfRecyclerView) {
+                //Start Touching
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    recyclerViewFirstTouchedY = event.y
+
+                    //Moving
+                } else if (event.action == MotionEvent.ACTION_MOVE) {
+                    val moveY = (recyclerViewFirstTouchedY - event.y)
+
+                    if ((moveY / 10) > 20) {
+                        bottomStripScreenRoot.visibility = VISIBLE
+                        bottomStripScreenProgressBar.visibility = VISIBLE
+                        bottomStripScreenText.visibility = GONE
+                        bottomStripScreenTryAgainButton.visibility = GONE
+
+                    } else if (moveY > 0) {
+                        recyclerView.animate()
+                            .y(recyclerViewFirstTouchedY + (moveY / 10))
+                            .setDuration(0)
+                            .start()
+                    }
+                }
+                return@setOnTouchListener true
+            } else {
+                return@setOnTouchListener false
+            }
+        }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val gridLayoutManager = (recyclerView.layoutManager as GridLayoutManager?)!!
+                val totalItemCount = gridLayoutManager.itemCount
+                val lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition()
+                if (totalItemCount - lastVisibleItemPosition == 1) {
+                    isEndOfRecyclerView = true
+                }
+            }
+        })
 
         errorScreenButton.setOnClickListener {
             viewModel.getMovieItems(currentPageNumber + 1)

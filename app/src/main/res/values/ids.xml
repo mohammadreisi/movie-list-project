@@ -6,8 +6,10 @@
     //Movie list fragment
     <item name="movie_list_fragment_root_view" type="id"/>
     <item name="movie_list_fragment_recycler_view" type="id"/>
-    <item name="movie_list_fragment_title" type="id"/>
-    <item name="movie_list_fragment_logo" type="id"/>
+
+    <item name="movie_list_fragment_top_bar_view_root" type="id"/>
+    <item name="movie_list_fragment_top_bar_view_title" type="id"/>
+    <item name="movie_list_fragment_top_bar_view_logo" type="id"/>
 
     <item name="movie_list_fragment_loading_screen_root" type="id"/>
     <item name="movie_list_fragment_loading_screen_logo" type="id"/>
