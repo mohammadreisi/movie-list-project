@@ -28,4 +28,8 @@ class RemoteRepositoryImpl @Inject constructor(val retrofitApiService: RetrofitA
             }
         }
     }
+
+    override suspend fun getMoviePoster(pageNumber: Int): Flow<DataState<String>> {
+        TODO("Not yet implemented")
+    }
 }

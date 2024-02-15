@@ -9,6 +9,9 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.marginTop
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import ir.cafebazaar.filmbazar.Extensions.addConstraintSet
 import ir.cafebazaar.filmbazar.Extensions.dp
 import ir.cafebazaar.filmbazar.R
@@ -21,8 +24,6 @@ class MovieItemCell(context: Context) : ConstraintLayout(context) {
     init {
         moviePoster = ImageView(context).apply {
             id = R.id.movie_item_cell_poster
-            background =
-                ResourcesCompat.getDrawable(resources, R.drawable.movie_poster_background, null)
         }
         movieTitle = TextView(context).apply {
             id = R.id.movie_item_cell_title
@@ -64,13 +65,10 @@ class MovieItemCell(context: Context) : ConstraintLayout(context) {
     }
 
     fun setItemDetails(movieItem: MovieItem) {
-        moviePoster.setImageDrawable(
-            ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.cafe_bazaar_logo,
-                null
-            )
-        )
+        Glide.with(context)
+            .load("https://image.tmdb.org/t/p/original${movieItem.poster_path}")
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(30)))
+            .into(moviePoster)
         movieTitle.text = movieItem.title
     }
 

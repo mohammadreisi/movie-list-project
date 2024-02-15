@@ -29,7 +29,7 @@ fun RealmMovieResult.toDomain(): MovieItem {
         this.adult ?: false,
         this.backdrop_path ?: "",
         this.genre_ids.toList(),
-        this.id ?: 0L,
+        this.movieId ?: 0L,
         this.original_language ?: "",
         this.original_title ?: "",
         this.overview ?: "",
